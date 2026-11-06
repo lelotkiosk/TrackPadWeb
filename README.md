@@ -6,7 +6,7 @@ Turn a Windows PC into a wireless trackpad controlled from a phone's browser.
 
 Download the self-contained Windows x64 executable directly: [PhoneTrackpad.exe](https://github.com/lelotkiosk/TrackPadWeb/raw/master/downloads/PhoneTrackpad.exe) (46.4 MiB). No separate .NET installation is required.
 
-**SHA-256:** `691E6074C7B0D588604A0470C315BAFD1918F76DBA16C03B029820BADEB2E41A`
+**SHA-256:** `E1CF24AA75D50C4CD16CA32632489388E2D1FF341194A700D5EA89828164553A`
 
 ## Run
 
