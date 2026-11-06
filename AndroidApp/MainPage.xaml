@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PhoneTrackpad.Mobile.MainPage"
+             BackgroundColor="#090A0F">
+    <Grid>
+        <ScrollView x:Name="ConnectPanel">
+            <VerticalStackLayout Padding="28,42"
+                                 Spacing="0"
+                                 VerticalOptions="Center">
+                <Border WidthRequest="88"
+                        HeightRequest="88"
+                        Padding="18"
+                        HorizontalOptions="Start"
+                        Background="#12243B"
+                        Stroke="#255582"
+                        StrokeThickness="1">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="26" />
+                    </Border.StrokeShape>
+                    <Grid>
+                        <Border Stroke="#BAE6FD"
+                                StrokeThickness="2.5"
+                                Background="Transparent"
+                                Margin="3,0"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10" />
+                            </Border.StrokeShape>
+                        </Border>
+                        <BoxView WidthRequest="2"
+                                 Color="#38BDF8"
+                                 HorizontalOptions="Center" />
+                        <Ellipse WidthRequest="17"
+                                 HeightRequest="17"
+                                 Fill="#FFFFFF"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center"
+                                 Margin="0,0,0,12" />
+                        <Ellipse WidthRequest="9"
+                                 HeightRequest="9"
+                                 Fill="#2563EB"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center"
+                                 Margin="0,0,0,12" />
+                    </Grid>
+                </Border>
+
+                <Label Text="PC TRACKPAD"
+                       FontSize="13"
+                       CharacterSpacing="2.5"
+                       FontAttributes="Bold"
+                       TextColor="#38BDF8"
+                       Margin="0,30,0,8" />
+                <Label Text="Your phone.{LineBreak}Your PC. One touch."
+                       FontSize="34"
+                       LineHeight="1.05"
+                       FontAttributes="Bold"
+                       TextColor="#F8FAFC" />
+                <Label Text="A smooth, fullscreen trackpad for your computer."
+                       FontSize="16"
+                       LineHeight="1.35"
+                       TextColor="#9CAFC5"
+                       Margin="0,14,0,28" />
+
+                <Border Padding="18,16"
+                        Background="#101722"
+                        Stroke="#263449"
+                        StrokeThickness="1">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="CONNECT TO YOUR PC"
+                               FontSize="11"
+                               CharacterSpacing="1.4"
+                               FontAttributes="Bold"
+                               TextColor="#8EA2BA" />
+                        <Entry x:Name="ServerUrlEntry"
+                               Placeholder="http://192.168.100.2:5000"
+                               Keyboard="Url"
+                               ReturnType="Go"
+                               Completed="OnConnectClicked"
+                               TextColor="#F8FAFC"
+                               PlaceholderColor="#64748B"
+                               BackgroundColor="#182334"
+                               HeightRequest="52"
+                               ClearButtonVisibility="WhileEditing" />
+                        <Button Text="Connect  →"
+                                Clicked="OnConnectClicked"
+                                BackgroundColor="#2563EB"
+                                TextColor="White"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="14"
+                                HeightRequest="54" />
+                        <Label x:Name="StatusLabel"
+                               IsVisible="False"
+                               FontSize="13"
+                               TextColor="#FCA5A5"
+                               LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Use Bluetooth keyboard &amp; mouse"
+                        Clicked="OnBluetoothModeClicked"
+                        BackgroundColor="#182334"
+                        TextColor="#BAE6FD"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                        CornerRadius="14"
+                        HeightRequest="54"
+                        Margin="0,14,0,0" />
+
+                <HorizontalStackLayout Spacing="8"
+                                       HorizontalOptions="Center"
+                                       Margin="0,24,0,0">
+                    <Ellipse WidthRequest="7"
+                             HeightRequest="7"
+                             Fill="#34D399"
+                             VerticalOptions="Center" />
+                    <Label Text="LOCAL NETWORK  ·  NO ACCOUNT"
+                           FontSize="10"
+                           CharacterSpacing="1.1"
+                           FontAttributes="Bold"
+                           TextColor="#71839A"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid x:Name="BluetoothPanel"
+              IsVisible="False"
+              BackgroundColor="#090A0F"
+              Padding="8">
+            <Grid x:Name="BluetoothSetupScreen"
+                  RowDefinitions="Auto,Auto,*">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <Label Text="BLUETOOTH KEYBOARD &amp; MOUSE"
+                           FontSize="15"
+                           CharacterSpacing="1"
+                           FontAttributes="Bold"
+                           TextColor="#BAE6FD"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="1"
+                            Text="Back"
+                            Clicked="OnBackToModesClicked"
+                            BackgroundColor="#182334"
+                            TextColor="#F8FAFC"
+                            CornerRadius="10"
+                            Padding="14,6" />
+                </Grid>
+
+                <Label x:Name="BluetoothStatusLabel"
+                       Grid.Row="1"
+                       Text="Start Bluetooth mode, then pair Phone Trackpad from Windows Bluetooth settings."
+                       TextColor="#9CAFC5"
+                       FontSize="12"
+                       LineBreakMode="WordWrap"
+                       Margin="2,6" />
+
+                <VerticalStackLayout x:Name="BluetoothSetupPanel"
+                                     Grid.Row="2"
+                                     Spacing="6"
+                                     Margin="0,2">
+                <Button Text="1. Start Bluetooth on this phone"
+                        Clicked="OnStartBluetoothClicked"
+                        BackgroundColor="#2563EB"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HeightRequest="42" />
+                <Button Text="2. Make phone discoverable"
+                        Clicked="OnMakeBluetoothDiscoverableClicked"
+                        BackgroundColor="#182334"
+                        TextColor="#F8FAFC"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HeightRequest="42" />
+                <Label Text="Approve the Android visibility prompt. Then on the PC choose Settings → Bluetooth &amp; devices → Add device → Bluetooth. Select your phone's Bluetooth name; it may not say “Phone Trackpad”."
+                       TextColor="#CBD5E1"
+                       FontSize="12"
+                       LineBreakMode="WordWrap" />
+                <Label Text="3. After pairing, refresh this list, select the PC, then connect."
+                       TextColor="#CBD5E1"
+                       FontSize="12"
+                       Margin="0,2,0,0" />
+                <Picker x:Name="BluetoothHostPicker"
+                        Title="Select the paired PC"
+                        TextColor="#F8FAFC"
+                        TitleColor="#9CAFC5"
+                        BackgroundColor="#182334"
+                        HeightRequest="44" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="Refresh PC list"
+                            Clicked="OnRefreshBluetoothHostsClicked"
+                            BackgroundColor="#182334"
+                            TextColor="#F8FAFC"
+                            CornerRadius="10"
+                            HeightRequest="42" />
+                    <Button Grid.Column="1"
+                            Text="Connect"
+                            Clicked="OnConnectBluetoothHostClicked"
+                            BackgroundColor="#2563EB"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="42" />
+                </Grid>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid x:Name="BluetoothControlScreen"
+                  IsVisible="False"
+                  RowDefinitions="Auto,Auto,*,Auto"
+                  Padding="4">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <Label Text="PHONE TRACKPAD"
+                               FontSize="16"
+                               CharacterSpacing="1.2"
+                               FontAttributes="Bold"
+                               TextColor="#BAE6FD"
+                               VerticalOptions="Center" />
+                    <Button Grid.Column="1"
+                                Text="Back"
+                                Clicked="OnBackToModesClicked"
+                                BackgroundColor="#182334"
+                                TextColor="#F8FAFC"
+                                CornerRadius="10"
+                                Padding="14,6" />
+                </Grid>
+                <Border Grid.Row="1"
+                        Padding="10,5"
+                        Background="#12243B"
+                        Stroke="#255582"
+                        StrokeThickness="1"
+                        Margin="0,3">
+                    <Label x:Name="BluetoothControlStatusLabel"
+                           Text="Waiting for Bluetooth connection"
+                           TextColor="#FCD34D"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           LineBreakMode="WordWrap" />
+                </Border>
+                <Grid Grid.Row="2">
+                <Grid x:Name="BluetoothTrackpadPanel">
+                    <GraphicsView x:Name="BluetoothTrackpadView"
+                                  StartInteraction="OnBluetoothPadStart"
+                                  DragInteraction="OnBluetoothPadDrag"
+                                  EndInteraction="OnBluetoothPadEnd" />
+                    <VerticalStackLayout Spacing="6"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         InputTransparent="True">
+                        <Label Text="WIRELESS TRACKPAD"
+                               TextColor="#8EA2BA"
+                               FontSize="11"
+                               CharacterSpacing="1.4"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Move pointer • Tap to click • Two-finger scroll"
+                               TextColor="#71839A"
+                               FontSize="13"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Hold until the haptic cue, then move to drag"
+                               TextColor="#71839A"
+                               FontSize="12"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Grid x:Name="BluetoothKeyboardGrid"
+                      IsVisible="False"
+                      Padding="2"
+                      RowSpacing="3" />
+                </Grid>
+
+                <Button x:Name="BluetoothKeyboardToggle"
+                        Grid.Row="3"
+                        Text="⌨  Show keyboard"
+                        Clicked="OnBluetoothKeyboardToggleClicked"
+                        BackgroundColor="#182334"
+                        TextColor="#F8FAFC"
+                        CornerRadius="12"
+                        HeightRequest="44"
+                        Margin="0,6,0,0" />
+            </Grid>
+        </Grid>
+
+        <WebView x:Name="TrackpadWebView"
+                 IsVisible="False"
+                 BackgroundColor="#090A0F"
+                 Navigated="OnWebViewNavigated" />
+    </Grid>
+</ContentPage>
