@@ -9,115 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddFilter("Microsoft", LogLevel.Warning);
-
-builder.Services.AddSignalR();
-
-int port = FindAvailablePort(5000);
-string localIp = GetLocalIpAddress();
-
-var app = builder.Build();
-
-EnsureFirewallRule(port);
-
-app.MapHub<TrackpadHub>("/trackpad");
-app.MapGet("/", (HttpContext context) =>
-{
-    context.Response.Headers.CacheControl = "no-store";
-    return Results.Content(TRACKPAD_HTML, "text/html");
-});
-app.MapGet("/manifest.json", () => Results.Content(MANIFEST_JSON, "application/json"));
-app.MapGet("/sw.js", () => Results.Content(SERVICE_WORKER_JS, "application/javascript"));
-app.MapGet("/app-icon.svg", () => Results.Content(APP_ICON_SVG, "image/svg+xml"));
-
-string phoneUrl = $"http://{localIp}:{port}";
-
-Console.WriteLine("========================================================");
-Console.WriteLine("                PC TRACKPAD IS READY                    ");
-Console.WriteLine("========================================================");
-Console.WriteLine("\n   Open this URL on your phone's browser:");
-Console.WriteLine($"     {phoneUrl}\n");
-Console.WriteLine("--------------------------------------------------------");
-Console.WriteLine("   Keep this window open while using your phone.");
-Console.WriteLine("   On Android, use the browser menu's 'Add to Home screen' for a shortcut.");
-Console.WriteLine("   Press Ctrl+C to stop the server.\n");
-
-app.Run($"http://0.0.0.0:{port}");
-
-int FindAvailablePort(int startPort)
-{
-    int port = startPort;
-    while (IsPortInUse(port))
-    {
-        port++;
-    }
-
-    return port;
-}
-
-bool IsPortInUse(int p)
-{
-    var activeTcpListeners = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
-    foreach (var listenerEndpoint in activeTcpListeners)
-    {
-        if (listenerEndpoint.Port == p) return true;
-    }
-    return false;
-}
-
-string GetLocalIpAddress()
-{
-    using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
-    try
-    {
-        socket.Connect("8.8.8.8", 65530);
-        return (socket.LocalEndPoint as IPEndPoint)?.Address.ToString() ?? "127.0.0.1";
-    }
-    catch
-    {
-        return "127.0.0.1";
-    }
-}
-
-void EnsureFirewallRule(int p)
-{
-    try
-    {
-        const string ruleName = "PhoneTrackpad Local Network";
-        var psi = new ProcessStartInfo
-        {
-            FileName = "powershell",
-            Arguments = "-NoProfile -Command \"if (Get-NetFirewallRule -Name 'PhoneTrackpad_LocalNetwork' -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }\"",
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-        var proc = Process.Start(psi);
-        proc?.WaitForExit();
-
-        if (proc?.ExitCode != 0)
-        {
-            var createPsi = new ProcessStartInfo
-            {
-                FileName = "powershell",
-                Arguments = $"Start-Process powershell -Verb RunAs -ArgumentList 'New-NetFirewallRule -Name PhoneTrackpad_LocalNetwork -DisplayName \"{ruleName}\" -Direction Inbound -LocalPort 5000-5100 -Protocol TCP -RemoteAddress LocalSubnet -Profile Domain,Private -Action Allow'",
-                UseShellExecute = true,
-                CreateNoWindow = false
-            };
-            var createProc = Process.Start(createPsi);
-            createProc?.WaitForExit();
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"[Warning] Firewall check: {ex.Message}");
-    }
-}
+using System.Windows.Forms;
 
 public class TrackpadHub : Hub
 {
@@ -223,8 +115,125 @@ public class TrackpadHub : Hub
     }
 }
 
-public partial class Program
+public class Program
 {
+    [STAThread]
+    public static void Main()
+    {
+        ApplicationConfiguration.Initialize();
+        try
+        {
+            RunTrayApplicationAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"PhoneTrackpad could not start.\n\n{ex.GetBaseException().Message}",
+                "PhoneTrackpad",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+
+    static async Task RunTrayApplicationAsync()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Logging.ClearProviders();
+        builder.Logging.AddFilter("Microsoft", LogLevel.Warning);
+        builder.Services.AddSignalR();
+
+        int port = FindAvailablePort(5000);
+        builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+        string phoneUrl = $"http://{GetLocalIpAddress()}:{port}";
+        using var app = builder.Build();
+
+        EnsureFirewallRule();
+        app.MapHub<TrackpadHub>("/trackpad");
+        app.MapGet("/", (HttpContext context) =>
+        {
+            context.Response.Headers.CacheControl = "no-store";
+            return Results.Content(TRACKPAD_HTML, "text/html");
+        });
+        app.MapGet("/manifest.json", () => Results.Content(MANIFEST_JSON, "application/json"));
+        app.MapGet("/sw.js", () => Results.Content(SERVICE_WORKER_JS, "application/javascript"));
+        app.MapGet("/app-icon.svg", () => Results.Content(APP_ICON_SVG, "image/svg+xml"));
+
+        await app.StartAsync();
+        using var trayContext = new PhoneTrackpadTrayContext(app, phoneUrl);
+        Application.Run(trayContext);
+        await app.StopAsync();
+    }
+
+    static int FindAvailablePort(int startPort)
+    {
+        int port = startPort;
+        while (IsPortInUse(port))
+        {
+            port++;
+        }
+
+        return port;
+    }
+
+    static bool IsPortInUse(int port) =>
+        System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties()
+            .GetActiveTcpListeners()
+            .Any(endpoint => endpoint.Port == port);
+
+    static string GetLocalIpAddress()
+    {
+        using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+        try
+        {
+            socket.Connect("8.8.8.8", 65530);
+            return (socket.LocalEndPoint as IPEndPoint)?.Address.ToString() ?? "127.0.0.1";
+        }
+        catch (SocketException)
+        {
+            return "127.0.0.1";
+        }
+    }
+
+    static void EnsureFirewallRule()
+    {
+        try
+        {
+            const string ruleName = "PhoneTrackpad Local Network";
+            var checkRule = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = "-NoProfile -Command \"if (Get-NetFirewallRule -Name 'PhoneTrackpad_LocalNetwork' -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var checkProcess = Process.Start(checkRule);
+            checkProcess?.WaitForExit();
+
+            if (checkProcess?.ExitCode == 0)
+            {
+                return;
+            }
+
+            var createRule = new ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = $"Start-Process powershell -Verb RunAs -ArgumentList 'New-NetFirewallRule -Name PhoneTrackpad_LocalNetwork -DisplayName \"{ruleName}\" -Direction Inbound -LocalPort 5000-5100 -Protocol TCP -RemoteAddress LocalSubnet -Profile Domain,Private -Action Allow'",
+                UseShellExecute = true,
+                CreateNoWindow = true
+            };
+            Process.Start(createRule);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)
+        {
+            MessageBox.Show(
+                $"PhoneTrackpad could not configure its Windows firewall rule. Phones may not be able to connect until local-network access is allowed manually.\n\n{ex.Message}",
+                "PhoneTrackpad firewall setup",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+    }
+
     const string MANIFEST_JSON = @"{
         ""name"": ""PC Trackpad"",
         ""short_name"": ""Trackpad"",

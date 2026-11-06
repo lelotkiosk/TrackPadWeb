@@ -7,6 +7,7 @@ $taskName = 'PhoneTrackpad Wi-Fi Server'
 
 if ([string]::IsNullOrWhiteSpace($ServerExePath)) {
     $candidates = @(
+        (Join-Path $PSScriptRoot 'bin\Release\net9.0-windows\win-x64\publish\PhoneTrackpad.exe'),
         (Join-Path $PSScriptRoot 'bin\Release\net9.0\win-x64\publish-final\PhoneTrackpad.exe'),
         (Join-Path $PSScriptRoot 'bin\Release\net9.0\win-x64\publish\PhoneTrackpad.exe'),
         (Join-Path $PSScriptRoot 'downloads\PhoneTrackpad.exe')
@@ -39,7 +40,7 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Principal $principal `
     -Settings $settings `
-    -Description 'Starts the PhoneTrackpad Wi-Fi server when this Windows user signs in.' `
+    -Description 'Starts the PhoneTrackpad Wi-Fi server in the Windows notification area when this user signs in.' `
     -Force | Out-Null
 
 $listener = Get-NetTCPConnection -State Listen -LocalPort 5000 -ErrorAction SilentlyContinue

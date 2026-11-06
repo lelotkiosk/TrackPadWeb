@@ -6,16 +6,16 @@ Turn a Windows PC into a wireless trackpad controlled from a phone's browser.
 
 Download the self-contained Windows x64 executable directly: [PhoneTrackpad.exe](https://github.com/lelotkiosk/TrackPadWeb/raw/master/downloads/PhoneTrackpad.exe) (46.4 MiB). No separate .NET installation is required.
 
-**SHA-256:** `E1CF24AA75D50C4CD16CA32632489388E2D1FF341194A700D5EA89828164553A`
+**SHA-256:** `CB2520C9A11A38B20761FE39B533F24D7F61A8612A09874DF52F9EA2E9BD848D`
 
 ## Run
 
-1. Run `PhoneTrackpad.exe` on the Windows PC. Windows may ask for administrator approval to add a firewall rule.
-2. Keep the console window open. It prints an HTTP URL for the phone.
+1. Run `PhoneTrackpad.exe` on the Windows PC. It runs in the notification area near the clock, without a Command Prompt window. Windows may ask for administrator approval to add a firewall rule.
+2. Right-click the PhoneTrackpad tray icon to open the trackpad page, copy the phone address, stop or restart the Wi-Fi server, or exit. If the icon is hidden, click the ^ arrow in the notification area and drag PhoneTrackpad into the visible icons.
 3. Connect the phone to the same trusted Wi-Fi/local network.
 4. Press Ctrl+C in the console to stop the server.
 
-To start the server automatically whenever your Windows account signs in, run `.\Install-AutoStart.ps1` in PowerShell from this project directory after building or downloading the executable. The script registers a per-user Scheduled Task, starts the server immediately if it is not already running, and configures it to restart after failures. It defaults to the published executable under `bin` or `downloads`; pass `-ServerExePath` if the executable is elsewhere. The server must run in your signed-in desktop session so it can control the PC's mouse and keyboard; it is not configured as a Windows service.
+To start the server automatically whenever your Windows account signs in, run `.\Install-AutoStart.ps1` in PowerShell from this project directory after building or downloading the executable. The script registers a per-user Scheduled Task, starts the server immediately if it is not already running, and configures it to restart after failures. It defaults to the published executable under `bin` or `downloads`; pass `-ServerExePath` if the executable is elsewhere. The tray app must run in your signed-in desktop session so it can control the PC's mouse and keyboard; it is not configured as a Windows service.
 
 ## Fullscreen Android app
 
@@ -24,7 +24,7 @@ The native Android app is named **Phone Trackpad - Fullscreen Remote** and has a
 1. Download [`PhoneTrackpad-Fullscreen-Remote.apk`](downloads/PhoneTrackpad-Fullscreen-Remote.apk), or build the APK with the command below.
 2. Copy the APK to your Android phone and open it. If prompted, allow your file manager to install unknown apps, then install **Phone Trackpad**.
 3. Choose a connection mode:
-   - **Wi-Fi trackpad:** Start `PhoneTrackpad.exe` on the PC, enter the URL it prints, and keep both devices on the same local network. The PC server must stay running.
+   - **Wi-Fi trackpad:** Start `PhoneTrackpad.exe` on the PC, right-click its tray icon to copy the phone address, and keep both devices on the same local network. The PC server must stay running.
    - **Bluetooth keyboard & mouse:** On Android 9 or later, tap **Use Bluetooth keyboard & mouse**, then **Start Bluetooth on this phone** and wait for the HID-ready message. Tap **Make phone discoverable** and approve Android's visibility prompt. Within five minutes, on the PC open **Settings → Bluetooth & devices → Add device → Bluetooth** and select the phone's Bluetooth name (it may not say “Phone Trackpad”). After Windows pairs, return to the app, tap **Refresh PC list**, select the PC, then tap **Connect**. Keep the app open until its status changes from **Connecting** to **Connected** and the trackpad/keyboard screen appears. If Windows drops the link, the app reports the disconnect and returns to setup. The Bluetooth control screen uses the same fullscreen trackpad style and a fixed-fit keyboard layout as Wi-Fi mode. The keyboard shows Caps Lock and held-modifier indicators; Windows lock LEDs update the Caps Lock indicator. The app follows the HID protocol Windows selects (Boot or Report); its status reports that the phone sent an input report, not that Windows applied it. One finger moves/clicks; hold still for the haptic cue, then move to drag; two fingers scroll (or tap for right-click). Slow pointer movements are accumulated instead of discarded. Keep the app open and connected while you use it; once connected, this mode works independently of the PC server and can send input at the Windows sign-in screen.
 4. The Bluetooth HID feature depends on Android's device-profile support, which varies by phone. Use a physical phone and PC to confirm pairing and connection. The first pairing is done manually in Windows Bluetooth settings.
 
