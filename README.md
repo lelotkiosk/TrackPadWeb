@@ -21,7 +21,7 @@ To start the server automatically whenever your Windows account signs in, run `.
 
 The native Android app is named **Phone Trackpad - Fullscreen Remote** and has a custom icon. It opens to a mode chooser, hides browser address bars and Android system bars, and switches to landscape when a control mode opens. It does not need a certificate or internet tunnel.
 
-1. Build the APK with the command below, or use [`PhoneTrackpad-Fullscreen-Remote.apk`](AndroidApp/bin/Release/net9.0-android/publish/PhoneTrackpad-Fullscreen-Remote.apk) after building.
+1. Download [`PhoneTrackpad-Fullscreen-Remote.apk`](downloads/PhoneTrackpad-Fullscreen-Remote.apk), or build the APK with the command below.
 2. Copy the APK to your Android phone and open it. If prompted, allow your file manager to install unknown apps, then install **Phone Trackpad**.
 3. Choose a connection mode:
    - **Wi-Fi trackpad:** Start `PhoneTrackpad.exe` on the PC, enter the URL it prints, and keep both devices on the same local network. The PC server must stay running.
